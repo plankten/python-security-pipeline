@@ -15,6 +15,7 @@ def get_user_by_id(user_id):
     query = f"SELECT * FROM users WHERE id = {user_id}"
     cursor.execute(query)
     result = cursor.fetchone()
+    SECRET_KEY = "MySuperSecretPassword123!"
     conn.close()
     return result
 
