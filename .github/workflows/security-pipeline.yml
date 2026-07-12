@@ -256,6 +256,25 @@ jobs:
           echo "ℹ️  Consider adding .bandit configuration"
         fi
 
+  jobs:
+   build:
+     runs-on: ubuntu-latest
+    steps:
+      uses: actions/checkout@master
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Create local changes
+      run: |
+         python -m pip install --upgrade pip
+         pip install pipenv
+         pipenv install
+         pipenv run python add-metadata.py < template.md > README.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: stefanzweifel/git-auto-commit-action@v4
+     
   # Job 6: Generate Security Report
   security-report:
     name: Security Summary Report
