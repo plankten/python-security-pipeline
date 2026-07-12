@@ -1,1 +1,51 @@
+name: My First Security Pipeline
 
+# This pipeline runs when you push to the 'main' branch
+on:
+  push:
+    branches: [ main ]
+
+# Jobs are the "workers" (VMs) that run your tasks
+jobs:
+  # Job 1: Security Scan
+  security-scan:
+    name: Run Security Scans
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Get the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python (so we can use Python tools)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Step 3: Install the security tools
+      - name: Install Security Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      # Step 4: Run Bandit (SAST - Static Analysis)
+      - name: Run Bandit Security Scan
+        run: |
+          echo "🔍 Running Bandit security scan..."
+          bandit -r . -f json -o bandit-report.json
+          echo "✅ Bandit scan complete!"
+
+      # Step 5: Run Safety (SCA - Dependency Check)
+      - name: Run Safety Dependency Check
+        run: |
+          echo "🔍 Running Safety dependency check..."
+          safety check
+          echo "✅ Safety scan complete!"
+
+      # Step 6: Upload the reports as artifacts
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
