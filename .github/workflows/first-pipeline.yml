@@ -36,6 +36,16 @@ jobs:
           bandit -r . -f json -o bandit-report.json
           echo "✅ Bandit scan complete!"
 
+      - name: Check for Critical Vulnerabilities
+        run: |
+          echo "🔍 Checking for critical vulnerabilities..."
+          if grep -q '"severity": "CRITICAL"' bandit-report.json; then
+          echo "❌ CRITICAL vulnerability found! Failing the pipeline."
+          exit 1
+          else
+          echo "✅ No critical vulnerabilities found."
+          fi
+          
       # Step 5: Run Safety (SCA - Dependency Check)
       - name: Run Safety Dependency Check
         run: |
